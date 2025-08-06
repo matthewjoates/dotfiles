@@ -106,15 +106,15 @@ main() {
     if [[ -d "$HOME/.sdkman" && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
         # shellcheck source=/dev/null
         source "$HOME/.sdkman/bin/sdkman-init.sh"
-        echo "✓ Sourced SDKMAN"
+        log_info "✓ Sourced SDKMAN"
         verify_command "java" "Java"
         verify_command "mvn" "Maven"
         verify_command "sdk" "SDKMAN!"
     else
-        echo "✗ SDKMAN directory not found or init script missing"
-        echo "✗ Java not found"
-        echo "✗ Maven not found"
-        echo "✗ sdk not found"
+        log_error "✗ SDKMAN directory not found or init script missing"
+        log_error "✗ Java not found"
+        log_error "✗ Maven not found"
+        log_error "✗ sdk not found"
     fi
     
     # Development tools
