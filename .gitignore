@@ -1,0 +1,40 @@
+# Dotfiles Repository Gitignore
+
+# Local configuration files (machine-specific)
+*.local
+
+# Backup files created by setup scripts
+*.backup.*
+
+# Temporary files
+*.tmp
+*.temp
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code workspace settings (use global settings instead)
+.vscode/
+
+# System-specific files
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Package manager files
+node_modules/
+.npm/
+
+# Environment files
+.env
+.env.local
+
+# Personal notes and TODO files
+NOTES.md
+TODO.md
+notes/
