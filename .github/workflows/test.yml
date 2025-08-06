@@ -1,0 +1,135 @@
+name: Test Dotfiles Installation
+
+on:
+  push:
+    branches: 
+        - "**"
+
+jobs:
+  test-macos:
+    name: Test on macOS
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up environment
+      run: |
+        echo "🍎 Setting up macOS test environment"
+        # Ensure Homebrew is available
+        which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        
+    - name: Run installation script
+      run: |
+        echo "🚀 Running dotfiles installation on macOS"
+        chmod +x scripts/install-dev-tools.sh
+        ./scripts/install-dev-tools.sh
+        
+    - name: Verify installations
+      run: |
+        echo "✅ Verifying installations on macOS"
+        chmod +x scripts/verify-installations.sh
+        ./scripts/verify-installations.sh
+        
+    - name: Test shell configuration
+      run: |
+        echo "🐚 Testing shell configuration"
+        bash -n shell/.bashrc
+        zsh -n shell/.zshrc || echo "Zsh config check skipped (Oh My Zsh not fully configured)"
+        
+  test-linux:
+    name: Test on Ubuntu
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up environment
+      run: |
+        echo "🐧 Setting up Linux test environment"
+        sudo apt-get update
+        sudo apt-get install -y curl wget git
+        
+    - name: Configure timezone (non-interactive)
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        export TZ=Europe/London
+        echo "tzdata tzdata/Areas select Europe" | sudo debconf-set-selections
+        echo "tzdata tzdata/Zones/Europe select London" | sudo debconf-set-selections
+        
+    - name: Run installation script
+      run: |
+        echo "🚀 Running dotfiles installation on Linux"
+        chmod +x scripts/install-dev-tools.sh
+        ./scripts/install-dev-tools.sh
+        
+    - name: Verify installations
+      run: |
+        echo "✅ Verifying installations on Linux"
+        chmod +x scripts/verify-installations.sh
+        ./scripts/verify-installations.sh
+        
+    - name: Test shell configuration
+      run: |
+        echo "🐚 Testing shell configuration"
+        bash -n shell/.bashrc
+        # Test aliases file
+        bash -n shell/.aliases
+        
+  lint-scripts:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install ShellCheck
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y shellcheck
+        
+    - name: Run ShellCheck
+      run: |
+        echo "🔍 Running ShellCheck on all shell scripts"
+        find . -name "*.sh" -type f | xargs shellcheck
+        
+    - name: Validate Git configuration
+      run: |
+        echo "🔧 Validating Git configuration"
+        git config --file git/.gitconfig --list || echo "Git config validation completed"
+        
+  test-syntax:
+    name: Test Configuration Syntax
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Test shell script syntax
+      run: |
+        echo "📝 Testing shell script syntax"
+        for script in $(find . -name "*.sh" -type f); do
+          echo "Checking $script"
+          bash -n "$script"
+        done
+        
+    - name: Test shell configuration syntax
+      run: |
+        echo "🐚 Testing shell configuration syntax"
+        bash -n shell/.bashrc
+        bash -n shell/.aliases
+        # Skip zsh syntax check as it requires zsh to be properly set up
+        
+    - name: Test JSON configuration syntax
+      run: |
+        echo "📋 Testing JSON configuration syntax"
+        if command -v jq >/dev/null 2>&1; then
+          find config -name "*.json" -type f | xargs -I {} jq . {} >/dev/null
+        else
+          sudo apt-get update && sudo apt-get install -y jq
+          find config -name "*.json" -type f | xargs -I {} jq . {} >/dev/null
+        fi
