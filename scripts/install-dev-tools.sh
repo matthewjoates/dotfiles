@@ -94,9 +94,9 @@ install_python() {
         
         # Add pyenv to shell
         {
-            echo 'export PYENV_ROOT="$HOME/.pyenv"'
-            echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
-            echo 'eval "$(pyenv init -)"'
+            echo "export PYENV_ROOT=\"\$HOME/.pyenv\""
+            echo "command -v pyenv >/dev/null || export PATH=\"\$PYENV_ROOT/bin:\$PATH\""
+            echo "eval \"\$(pyenv init -)\""
         } >> ~/.bashrc
         
         # Source pyenv
@@ -153,6 +153,7 @@ install_java() {
     if [[ ! -d "$HOME/.sdkman" ]]; then
         log_info "Installing SDKMAN!..."
         if curl -s "https://get.sdkman.io" | bash 2>/dev/null; then
+            # shellcheck source=/dev/null
             source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || true
             log_success "SDKMAN! installed"
         else
@@ -161,6 +162,7 @@ install_java() {
         fi
     else
         log_info "SDKMAN! already installed"
+        # shellcheck source=/dev/null
         source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || true
     fi
     
@@ -204,7 +206,7 @@ install_homebrew_linux() {
         
         # Add to shell profiles
         {
-            echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+            echo "eval \"\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\""
         } >> ~/.bashrc
         
         log_success "Homebrew installed on Linux"
@@ -298,7 +300,7 @@ install_dev_tools() {
         # Linux-specific: Install VS Code via direct download (casks don't work on Linux)
         if ! command -v code &> /dev/null; then
             log_info "Installing VS Code on Linux..."
-            curl -fsSL https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 -o vscode.deb
+            curl -fsSL "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64" -o vscode.deb
             sudo dpkg -i vscode.deb 2>/dev/null || sudo apt-get install -f -y
             rm -f vscode.deb
             log_success "VS Code installed on Linux"
@@ -308,6 +310,7 @@ install_dev_tools() {
         if ! command -v gcloud &> /dev/null; then
             log_info "Installing Google Cloud SDK on Linux..."
             curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
+            # shellcheck source=/dev/null
             source "$HOME/google-cloud-sdk/path.bash.inc" 2>/dev/null || true
             log_success "Google Cloud SDK installed"
         fi

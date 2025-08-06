@@ -44,8 +44,14 @@ main() {
     log_info "🔍 Verifying installations..."
     
     # Source shell configurations to pick up environment changes
-    [[ -f ~/.bashrc ]] && source ~/.bashrc 2>/dev/null || true
-    [[ -f ~/.profile ]] && source ~/.profile 2>/dev/null || true
+    if [[ -f ~/.bashrc ]]; then
+        # shellcheck source=/dev/null
+        source ~/.bashrc 2>/dev/null || true
+    fi
+    if [[ -f ~/.profile ]]; then
+        # shellcheck source=/dev/null  
+        source ~/.profile 2>/dev/null || true
+    fi
     
     # Source Homebrew environment on Linux
     if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
@@ -55,11 +61,21 @@ main() {
     
     # Debug: Show what files exist
     log_info "Checking for installation directories..."
-    [[ -d "$HOME/.nvm" ]] && log_info "✓ NVM directory exists" || log_warning "✗ NVM directory missing"
-    [[ -d "$HOME/.pyenv" ]] && log_info "✓ pyenv directory exists" || log_warning "✗ pyenv directory missing"
-    [[ -d "$HOME/.sdkman" ]] && log_info "✓ SDKMAN directory exists" || log_warning "✗ SDKMAN directory missing"
-    
-    # Basic tools
+    if [[ -d "$HOME/.nvm" ]]; then
+        log_info "✓ NVM directory exists"
+    else
+        log_warning "✗ NVM directory missing"
+    fi
+    if [[ -d "$HOME/.pyenv" ]]; then
+        log_info "✓ pyenv directory exists"
+    else
+        log_warning "✗ pyenv directory missing"
+    fi
+    if [[ -d "$HOME/.sdkman" ]]; then
+        log_info "✓ SDKMAN directory exists"
+    else
+        log_warning "✗ SDKMAN directory missing"
+    fi    # Basic tools
     verify_command "git" "Git"
     
     # Node.js (need to source NVM first)
@@ -88,16 +104,17 @@ main() {
 
     # Source SDKMAN! if it exists
     if [[ -d "$HOME/.sdkman" && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        # shellcheck source=/dev/null
         source "$HOME/.sdkman/bin/sdkman-init.sh"
-        log_info "✓ Sourced SDKMAN"
+        echo "✓ Sourced SDKMAN"
         verify_command "java" "Java"
         verify_command "mvn" "Maven"
         verify_command "sdk" "SDKMAN!"
     else
-        log_error "✗ SDKMAN directory not found or init script missing"
-        log_error "✗ Java not found"
-        log_error "✗ Maven not found"
-        log_error "✗ sdk not found"
+        echo "✗ SDKMAN directory not found or init script missing"
+        echo "✗ Java not found"
+        echo "✗ Maven not found"
+        echo "✗ sdk not found"
     fi
     
     # Development tools
