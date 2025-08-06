@@ -42,7 +42,6 @@ verify_command() {
 # Main verification function
 main() {
     log_info "🔍 Verifying installations..."
-    echo ""
     
     # Source shell configurations to pick up environment changes
     [[ -f ~/.bashrc ]] && source ~/.bashrc 2>/dev/null || true
@@ -56,10 +55,9 @@ main() {
     
     # Debug: Show what files exist
     log_info "Checking for installation directories..."
-    [[ -d "$HOME/.nvm" ]] && log_success "✓ NVM directory exists" || log_warning "✗ NVM directory missing"
-    [[ -d "$HOME/.pyenv" ]] && log_success "✓ pyenv directory exists" || log_warning "✗ pyenv directory missing"
-    [[ -d "$HOME/.sdkman" ]] && log_success "✓ SDKMAN directory exists" || log_warning "✗ SDKMAN directory missing"
-    echo ""
+    [[ -d "$HOME/.nvm" ]] && log_info "✓ NVM directory exists" || log_warning "✗ NVM directory missing"
+    [[ -d "$HOME/.pyenv" ]] && log_info "✓ pyenv directory exists" || log_warning "✗ pyenv directory missing"
+    [[ -d "$HOME/.sdkman" ]] && log_info "✓ SDKMAN directory exists" || log_warning "✗ SDKMAN directory missing"
     
     # Basic tools
     verify_command "git" "Git"
@@ -91,7 +89,7 @@ main() {
     # Source SDKMAN! if it exists
     if [[ -d "$HOME/.sdkman" && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
         source "$HOME/.sdkman/bin/sdkman-init.sh"
-        log_success "✓ Sourced SDKMAN"
+        log_info "✓ Sourced SDKMAN"
         verify_command "java" "Java"
         verify_command "mvn" "Maven"
         verify_command "sdk" "SDKMAN!"
