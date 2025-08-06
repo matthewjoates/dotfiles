@@ -29,11 +29,16 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if we're on macOS
+# Check if we're on macOS or Linux
 if [[ "$OSTYPE" == "darwin"* ]]; then
     PLATFORM="macos"
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     PLATFORM="linux"
+    # Set non-interactive mode for Debian-based systems (Ubuntu, Debian)
+    if command -v apt-get &> /dev/null; then
+        export DEBIAN_FRONTEND=noninteractive
+        log_info "Detected Debian-based system, setting DEBIAN_FRONTEND=noninteractive"
+    fi
 else
     log_warning "Unknown platform: $OSTYPE"
     PLATFORM="unknown"
@@ -260,9 +265,9 @@ install_dev_tools() {
     # Text editors and database tools
     log_info "Installing editors and database tools..."
     if brew install vim neovim postgresql; then
-        log_success "Editors and PostgreSQL installed"
+        log_success "Editors, PostgreSQL"
     else
-        log_warning "Some editors/PostgreSQL failed to install"
+        log_warning "Some editors/databases failed to install"
         return 1
     fi
     
@@ -297,15 +302,6 @@ install_dev_tools() {
             docker \
             
     elif [[ "$PLATFORM" == "linux" ]]; then
-        # Linux-specific: Install VS Code via direct download (casks don't work on Linux)
-        if ! command -v code &> /dev/null; then
-            log_info "Installing VS Code on Linux..."
-            curl -fsSL "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64" -o vscode.deb
-            sudo dpkg -i vscode.deb 2>/dev/null || sudo apt-get install -f -y
-            rm -f vscode.deb
-            log_success "VS Code installed on Linux"
-        fi
-        
         # Google Cloud SDK (use official installation method for Linux)
         if ! command -v gcloud &> /dev/null; then
             log_info "Installing Google Cloud SDK on Linux..."
@@ -319,9 +315,9 @@ install_dev_tools() {
     log_success "Development tools installed"
 }
 
-# Install VS Code extensions
+# Install VS Code extensions (macOS only)
 install_vscode_extensions() {
-    if command -v code &> /dev/null; then
+    if [[ "$PLATFORM" == "macos" ]] && command -v code &> /dev/null; then
         log_info "Installing VS Code extensions..."
         
         # Essential extensions
@@ -343,8 +339,10 @@ install_vscode_extensions() {
         code --install-extension ms-vscode.vscode-docker
         
         log_success "VS Code extensions installed"
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        log_info "Skipping VS Code extensions on Linux (using vim/nvim instead)"
     else
-        log_warning "VS Code not found, skipping extension installation"
+        log_warning "VS Code not found on macOS, skipping extension installation"
     fi
 }
 

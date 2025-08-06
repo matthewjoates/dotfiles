@@ -275,17 +275,9 @@ zsh -n shell/.zshrc
 bash -n shell/.bashrc
 ```
 
-## 🤝 Contributing
-
-This is a personal dotfiles repository, but feel free to:
-- Fork it and adapt it for your own use
-- Open issues for suggestions or bugs
-- Submit pull requests for improvements
 
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
 
 ---
-
-**Happy coding! 🎉**

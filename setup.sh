@@ -34,18 +34,6 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 log_info "Starting dotfiles setup from: $DOTFILES_DIR"
 
-# Check if we're on macOS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    log_info "Detected macOS"
-    PLATFORM="macos"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    log_info "Detected Linux"
-    PLATFORM="linux"
-else
-    log_warning "Unknown platform: $OSTYPE"
-    PLATFORM="unknown"
-fi
-
 # Function to backup existing files
 backup_file() {
     local file="$1"
@@ -78,38 +66,9 @@ create_symlink() {
     log_success "Created symlink: $target -> $source"
 }
 
-# Install Homebrew on macOS
-install_homebrew() {
-    if ! command -v brew &> /dev/null; then
-        log_info "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        log_success "Homebrew installed"
-    else
-        log_info "Homebrew already installed"
-    fi
-}
+# Install Homebrew on macOS (removed - handled by install-dev-tools.sh)
 
-# Install essential packages
-install_packages() {
-    log_info "Installing essential packages..."
-    
-    if [[ "$PLATFORM" == "macos" ]]; then
-        install_homebrew
-        
-        # Install essential tools
-        brew install git curl wget zsh vim neovim tree jq
-        brew install --cask visual-studio-code
-        
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        # Update package list
-        sudo apt-get update
-        
-        # Install essential tools
-        sudo apt-get install -y git curl wget zsh vim tree jq build-essential
-    fi
-    
-    log_success "Essential packages installed"
-}
+# Install essential packages (removed - handled by install-dev-tools.sh)
 
 # Setup shell configuration
 setup_shell() {
@@ -130,12 +89,8 @@ setup_shell() {
         create_symlink "$DOTFILES_DIR/shell/.aliases" "$HOME/.aliases"
     fi
     
-    # Change default shell to zsh
-    if [[ "$SHELL" != *"zsh"* ]]; then
-        log_info "Changing default shell to zsh..."
-        chsh -s "$(which zsh)"
-        log_success "Default shell changed to zsh"
-    fi
+    log_success "Shell configuration files linked"
+    log_info "Note: Run 'chsh -s \$(which zsh)' manually after zsh is installed to change default shell"
 }
 
 # Setup git configuration
@@ -173,8 +128,7 @@ main() {
         exit 1
     fi
     
-    # Run setup steps
-    install_packages
+    # Run setup steps (package installation now handled by install-dev-tools.sh)
     setup_shell
     setup_git
     setup_dev_tools

@@ -26,10 +26,10 @@ docker-compose -f docker-compose.test.yml build
 docker-compose -f docker-compose.test.yml up -d dotfiles-test
 
 # Enter and test
-echo "🚀 Running dotfiles installation test..."
+echo "🚀 Running dotfiles setup test..."
 
-echo "🎯 Step 1: Installing development tools..."
-docker exec -it dotfiles-test bash -c "./scripts/install-dev-tools.sh" || echo "⚠️  Installation script exited with non-zero status"
+echo "🎯 Step 1: Running complete setup (includes tools + configs)..."
+docker exec -it dotfiles-test bash -c "echo 'y' | ./setup.sh" || echo "⚠️  Setup script exited with non-zero status"
 
 echo ""
 echo "🔍 Step 2: Running verification..."
@@ -39,7 +39,7 @@ echo ""
 echo "🎉 Step 3: All tests completed!"
 docker exec -it dotfiles-test bash -c "echo 'Installation and verification finished successfully!'"
 
-echo "🧹 Cleaning up..."
-docker-compose -f docker-compose.test.yml down
+# echo "🧹 Cleaning up..."
+# docker-compose -f docker-compose.test.yml down
 
 echo "✨ Test completed!"
