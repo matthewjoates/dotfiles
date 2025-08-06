@@ -266,7 +266,7 @@ install_dev_tools() {
     
     # Terminal and productivity tools
     log_info "Installing terminal and productivity tools..."
-    if brew install tmux fzf ripgrep bat fd eza tldr; then
+    if brew install tmux fzf ripgrep bat fd eza; then
         log_success "Terminal tools installed"
     else
         log_warning "Some terminal tools failed to install"
@@ -275,7 +275,7 @@ install_dev_tools() {
     
     # AWS and security tools
     log_info "Installing AWS and security tools..."
-    if brew install aws-sam-cli 1password-cli; then
+    if brew install aws-sam-cli; then
         log_success "AWS and security tools installed"
     else
         log_warning "Some AWS/security tools failed to install"

@@ -33,9 +33,9 @@ verify_command() {
     local cmd=$1
     local name=$2
     if command -v "$cmd" >/dev/null 2>&1; then
-        echo "✅ $name installed"
+        log_success "✓ $name installed"
     else
-        echo "❌ $name not found"
+        log_error "✗ $name not found"
     fi
 }
 
@@ -56,9 +56,9 @@ main() {
     
     # Debug: Show what files exist
     log_info "Checking for installation directories..."
-    [[ -d "$HOME/.nvm" ]] && echo "✓ NVM directory exists" || echo "✗ NVM directory missing"
-    [[ -d "$HOME/.pyenv" ]] && echo "✓ pyenv directory exists" || echo "✗ pyenv directory missing"  
-    [[ -d "$HOME/.sdkman" ]] && echo "✓ SDKMAN directory exists" || echo "✗ SDKMAN directory missing"
+    [[ -d "$HOME/.nvm" ]] && log_success "✓ NVM directory exists" || log_warning "✗ NVM directory missing"
+    [[ -d "$HOME/.pyenv" ]] && log_success "✓ pyenv directory exists" || log_warning "✗ pyenv directory missing"
+    [[ -d "$HOME/.sdkman" ]] && log_success "✓ SDKMAN directory exists" || log_warning "✗ SDKMAN directory missing"
     echo ""
     
     # Basic tools
@@ -72,8 +72,8 @@ main() {
         verify_command "node" "Node.js"
         verify_command "nvm" "Node Version Manager"
     else
-        echo "❌ Node.js not found (NVM script missing)"
-        echo "❌ nvm not found"
+        log_error "✗ Node.js not found (NVM script missing)"
+        log_error "✗ nvm not found"
     fi
     
     # Python (need to source pyenv first)
@@ -84,22 +84,22 @@ main() {
         eval "$(pyenv init -)" 2>/dev/null || true
         verify_command "pyenv" "Python Version Manager"
     else
-        echo "❌ pyenv not found (directory missing)"
+        log_error "✗ pyenv not found (directory missing)"
     fi
     
 
     # Source SDKMAN! if it exists
     if [[ -d "$HOME/.sdkman" && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
         source "$HOME/.sdkman/bin/sdkman-init.sh"
-        echo "✅ Sourced SDKMAN"
+        log_success "✓ Sourced SDKMAN"
         verify_command "java" "Java"
         verify_command "mvn" "Maven"
         verify_command "sdk" "SDKMAN!"
     else
-        echo "❌ SDKMAN directory not found or init script missing"
-        echo "❌ Java not found"
-        echo "❌ Maven not found"
-        echo "❌ sdk not found"
+        log_error "✗ SDKMAN directory not found or init script missing"
+        log_error "✗ Java not found"
+        log_error "✗ Maven not found"
+        log_error "✗ sdk not found"
     fi
     
     # Development tools
@@ -115,7 +115,7 @@ main() {
     verify_command "terraform" "Terraform"
     verify_command "gh" "GitHub CLI"
 
-    echo ""
+    echo "--------------------------------"
     log_success "🎉 Verification completed!"
 }
 
