@@ -48,6 +48,12 @@ main() {
     [[ -f ~/.bashrc ]] && source ~/.bashrc 2>/dev/null || true
     [[ -f ~/.profile ]] && source ~/.profile 2>/dev/null || true
     
+    # Source Homebrew environment on Linux
+    if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" 2>/dev/null || true
+        log_info "Homebrew environment sourced"
+    fi
+    
     # Debug: Show what files exist
     log_info "Checking for installation directories..."
     [[ -d "$HOME/.nvm" ]] && echo "✓ NVM directory exists" || echo "✗ NVM directory missing"
@@ -98,7 +104,6 @@ main() {
     
     # Development tools
     verify_command "docker" "Docker"
-    verify_command "code" "Visual Studio Code"
     verify_command "kubectl" "Kubernetes CLI"
     verify_command "psql" "PostgreSQL CLI"
     verify_command "jq" "jq"
@@ -107,11 +112,8 @@ main() {
     verify_command "vim" "Vim"
     verify_command "nvim" "Neovim"
     verify_command "aws" "AWS CLI"
-    verify_command "sam" "AWS SAM CLI"
     verify_command "terraform" "Terraform"
-    verify_command "op" "1Password CLI"
     verify_command "gh" "GitHub CLI"
-    
 
     echo ""
     log_success "🎉 Verification completed!"

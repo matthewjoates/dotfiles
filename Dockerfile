@@ -8,7 +8,7 @@ ENV TZ=Europe/London
 RUN echo 'tzdata tzdata/Areas select Europe' | debconf-set-selections && \
     echo 'tzdata tzdata/Zones/Europe select London' | debconf-set-selections
 
-# Install basic dependencies
+# Install basic dependencies including Homebrew requirements
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
@@ -19,6 +19,10 @@ RUN apt-get update && apt-get install -y \
     zsh \
     unzip \
     zip \
+    procps \
+    file \
+    locales \
+    ca-certificates \
     libssl-dev \
     zlib1g-dev \
     libbz2-dev \
@@ -30,8 +34,14 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxmlsec1-dev \
     libffi-dev \
-    liblzma-dev \
-    && rm -rf /var/lib/apt/lists/*
+    liblzma-dev
+
+# Clean up apt cache
+RUN rm -rf /var/lib/apt/lists/*
+
+# Generate locales for Homebrew
+RUN locale-gen en_US.UTF-8
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 
 # Create a non-root user for testing
 RUN useradd -m -s /bin/bash testuser && \

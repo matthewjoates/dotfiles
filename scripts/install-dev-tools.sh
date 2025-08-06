@@ -189,73 +189,128 @@ install_java() {
     fi
 }
 
+# Install Homebrew on Linux if not present
+install_homebrew_linux() {
+    if ! command -v brew &> /dev/null; then
+        log_info "Installing Homebrew on Linux..."
+        
+        # Set non-interactive mode to avoid prompts
+        export NONINTERACTIVE=1
+        
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        
+        # Add Homebrew to PATH for current session
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        
+        # Add to shell profiles
+        {
+            echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+        } >> ~/.bashrc
+        
+        log_success "Homebrew installed on Linux"
+    else
+        log_info "Homebrew already installed"
+        # Ensure brew is in PATH even if already installed
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" 2>/dev/null || true
+    fi
+}
+
 # Install common development tools
 install_dev_tools() {
     log_info "Installing development tools..."
     
+    if [[ "$PLATFORM" == "linux" ]]; then
+        # Install Homebrew on Linux first
+        install_homebrew_linux
+        # Ensure brew is available in current session
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" 2>/dev/null || true
+        
+        # Debug: Check if brew is working
+        if command -v brew &> /dev/null; then
+            log_info "Homebrew is available, version: $(brew --version | head -1)"
+        else
+            log_error "Homebrew not found in PATH after installation"
+            return 1
+        fi
+    fi
+    
+    log_info "Installing common tools via Homebrew..."
+    # Install tools in smaller batches to avoid timeouts
+    
+    # Essential CLI tools first
+    log_info "Installing essential CLI tools..."
+    if brew install git curl wget tree jq htop; then
+        log_success "Essential CLI tools installed"
+    else
+        log_warning "Some essential CLI tools failed to install"
+        return 1
+    fi
+    
+    # Development tools
+    log_info "Installing development tools..."
+    if brew install gh terraform kubectl helm awscli; then
+        log_success "Development tools installed" 
+    else
+        log_warning "Some development tools failed to install"
+        return 1
+    fi
+    
+    # Text editors and database tools
+    log_info "Installing editors and database tools..."
+    if brew install vim neovim postgresql; then
+        log_success "Editors and PostgreSQL installed"
+    else
+        log_warning "Some editors/PostgreSQL failed to install"
+        return 1
+    fi
+    
+    # Terminal and productivity tools
+    log_info "Installing terminal and productivity tools..."
+    if brew install tmux fzf ripgrep bat fd eza tldr; then
+        log_success "Terminal tools installed"
+    else
+        log_warning "Some terminal tools failed to install"
+        return 1
+    fi
+    
+    # AWS and security tools
+    log_info "Installing AWS and security tools..."
+    if brew install aws-sam-cli 1password-cli; then
+        log_success "AWS and security tools installed"
+    else
+        log_warning "Some AWS/security tools failed to install"
+        return 1
+    fi
+        
+    # Platform-specific installations
     if [[ "$PLATFORM" == "macos" ]]; then
-        # macOS tools via Homebrew
-        brew install \
-            git \
-            curl \
-            wget \
-            tree \
-            jq \
-            htop \
-            tmux \
-            fzf \
-            ripgrep \
-            bat \
-            fd \
-            exa \
-            tldr \
-            gh \
-            terraform \
-            kubectl \
-            helm \
-            awscli \
-            gcloud
-            
-        # Cask applications
+        # macOS-specific tools
+        brew install --cask google-cloud-sdk
+        
+        # Cask applications (macOS only)
         brew install --cask \
             visual-studio-code \
-            iterm2 \
+            ghostty \
             postman \
             docker \
-            figma \
-            slack \
-            zoom \
-            notion \
-            1password
             
     elif [[ "$PLATFORM" == "linux" ]]; then
-        # Linux tools via apt
-        sudo apt-get update
-        sudo apt-get install -y \
-            git \
-            curl \
-            wget \
-            tree \
-            jq \
-            htop \
-            tmux \
-            fzf \
-            ripgrep \
-            bat \
-            fd-find \
-            build-essential \
-            software-properties-common \
-            apt-transport-https \
-            ca-certificates \
-            gnupg \
-            lsb-release
-            
-        # Install VS Code
-        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-        sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
-        sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-        sudo apt-get update
-        sudo apt-get install -y code
+        # Linux-specific: Install VS Code via direct download (casks don't work on Linux)
+        if ! command -v code &> /dev/null; then
+            log_info "Installing VS Code on Linux..."
+            curl -fsSL https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 -o vscode.deb
+            sudo dpkg -i vscode.deb 2>/dev/null || sudo apt-get install -f -y
+            rm -f vscode.deb
+            log_success "VS Code installed on Linux"
+        fi
+        
+        # Google Cloud SDK (use official installation method for Linux)
+        if ! command -v gcloud &> /dev/null; then
+            log_info "Installing Google Cloud SDK on Linux..."
+            curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
+            source "$HOME/google-cloud-sdk/path.bash.inc" 2>/dev/null || true
+            log_success "Google Cloud SDK installed"
+        fi
     fi
     
     log_success "Development tools installed"
