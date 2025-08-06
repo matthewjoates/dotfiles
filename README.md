@@ -3,7 +3,6 @@
 [![Test Dotfiles Setup](https://github.com/matthewjoates/dev-environment-config/actions/workflows/test.yml/badge.svg)](https://github.com/matthewjoates/dev-environment-config/actions/workflows/test.yml)
 
 ```
-Welcome to my personal dotfiles repository! This contains my shell configurations, development tools setup, and automation scripts for quickly setting up a new development environment.
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡠⠤⠤⠤⠤⠤⠤⠤⠤⠤⢄⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⠤⠔⠚⣉⡤⠖⠒⠒⠒⠊⠉⠛⠲⣄⠀⠠⢄⡀⠉⠢⣄⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠴⠒⣋⣉⣁⣀⠤⠒⠋⠁⣠⠔⠒⠉⠁⠀⠀⠀⠀⠈⠦⠀⠀⠈⠳⣄⠈⢣⡀⠀⠀⠀⠀⠀
@@ -32,6 +31,7 @@ Welcome to my personal dotfiles repository! This contains my shell configuration
 ⣇⠀⣀⣀⣀⣀⣀⣀⣃⣰⣃⣐⣋⣀⣀⣀⣀⣀⣀⣀⣀⣀⣈⣑⣃⣈⣀⣀⣀⣋⣀⣹⣋⣧⣣⣀⣀⣀⣀⣀⣀⣀⣀⣗⠀⡿⠀⠀⠀⠀
 ⠘⠦⠄⠀⠀⠀⠤⠤⠤⠤⠤⠠⠤⠀⠄⠄⠀⠀⠀⠀⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠄⠠⠄⠀⠤⠤⠤⠄⠠⠼⠁⠀⠀⠀⠀
 ```
+Welcome to my personal dotfiles repository! This contains my shell configurations, development tools setup, and automation scripts for quickly setting up a new development environment.
 
 
 ## 📋 What's Included
