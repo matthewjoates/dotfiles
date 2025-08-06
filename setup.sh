@@ -50,7 +50,8 @@ fi
 backup_file() {
     local file="$1"
     if [[ -f "$file" ]]; then
-        local backup="${file}.backup.$(date +%Y%m%d_%H%M%S)"
+        local backup
+        backup="${file}.backup.$(date +%Y%m%d_%H%M%S)"
         log_info "Backing up $file to $backup"
         cp "$file" "$backup"
     fi
@@ -62,7 +63,8 @@ create_symlink() {
     local target="$2"
     
     # Create target directory if it doesn't exist
-    local target_dir="$(dirname "$target")"
+    local target_dir
+    target_dir="$(dirname "$target")"
     mkdir -p "$target_dir"
     
     # Backup existing file if it exists
@@ -131,7 +133,7 @@ setup_shell() {
     # Change default shell to zsh
     if [[ "$SHELL" != *"zsh"* ]]; then
         log_info "Changing default shell to zsh..."
-        chsh -s $(which zsh)
+        chsh -s "$(which zsh)"
         log_success "Default shell changed to zsh"
     fi
 }

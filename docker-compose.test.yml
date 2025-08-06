@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  dotfiles-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dotfiles-test
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+      - TZ=Europe/London
+    user: testuser
+    tty: true
+    stdin_open: true

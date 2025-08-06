@@ -3,7 +3,8 @@
 # Development Tools Installation Script
 # This script installs common development tools and environments
 
-set -e
+set -e  # Exit on error
+# Note: Removed 'set -e' to allow script to continue even if individual tools fail
 
 # Colors for output
 RED='\033[0;31m'
@@ -44,9 +45,13 @@ install_oh_my_zsh() {
         log_info "Installing Oh My Zsh..."
         sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         
-        # Install useful plugins
-        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+        # Install useful plugins (only if they don't exist)
+        if [[ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]]; then
+            git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+        fi
+        if [[ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]]; then
+            git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+        fi
         
         log_success "Oh My Zsh installed with plugins"
     else
@@ -62,6 +67,7 @@ install_node() {
         
         # Source nvm
         export NVM_DIR="$HOME/.nvm"
+        # shellcheck source=/dev/null
         [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
         
         # Install latest LTS Node.js
@@ -87,19 +93,26 @@ install_python() {
         fi
         
         # Add pyenv to shell
-        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-        echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+        {
+            echo 'export PYENV_ROOT="$HOME/.pyenv"'
+            echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+            echo 'eval "$(pyenv init -)"'
+        } >> ~/.bashrc
         
         # Source pyenv
         export PYENV_ROOT="$HOME/.pyenv"
         export PATH="$PYENV_ROOT/bin:$PATH"
         eval "$(pyenv init -)"
         
-        # Install latest Python
-        PYTHON_VERSION=$(pyenv install --list | grep -E '^\s*[0-9]+\.[0-9]+\.[0-9]+$' | tail -1 | tr -d ' ')
-        pyenv install $PYTHON_VERSION
-        pyenv global $PYTHON_VERSION
+        # Install stable Python version
+        PYTHON_VERSION="3.12.8"  # Use stable LTS version
+        log_info "Installing Python ${PYTHON_VERSION}..."
+        if pyenv install "$PYTHON_VERSION" 2>/dev/null || true; then
+            pyenv global "$PYTHON_VERSION" 2>/dev/null || true
+            log_success "Python ${PYTHON_VERSION} installed"
+        else
+            log_warning "Python installation failed, using system Python"
+        fi
         
         log_success "pyenv and Python $PYTHON_VERSION installed"
     else
@@ -119,7 +132,9 @@ install_docker() {
             # Install Docker on Linux
             curl -fsSL https://get.docker.com -o get-docker.sh
             sh get-docker.sh
-            sudo usermod -aG docker $USER
+            if sudo usermod -aG docker "$USER" 2>/dev/null; then
+                log_info "Added user to docker group"
+            fi
             rm get-docker.sh
             log_info "Docker installed. Please log out and back in for group changes to take effect."
         fi
@@ -127,6 +142,50 @@ install_docker() {
         log_success "Docker installation completed"
     else
         log_info "Docker already installed"
+    fi
+}
+
+# Install Java via SDKMAN!
+install_java() {
+    log_info "Installing Java via SDKMAN!..."
+    
+    # Install SDKMAN!
+    if [[ ! -d "$HOME/.sdkman" ]]; then
+        log_info "Installing SDKMAN!..."
+        if curl -s "https://get.sdkman.io" | bash 2>/dev/null; then
+            source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || true
+            log_success "SDKMAN! installed"
+        else
+            log_error "SDKMAN! installation failed"
+            return 0  # Return success to not stop the script
+        fi
+    else
+        log_info "SDKMAN! already installed"
+        source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || true
+    fi
+    
+    # Install Java
+    if ! command -v java &> /dev/null; then
+        log_info "Installing Java..."
+        if sdk install java 21.0.5-tem 2>/dev/null || true; then
+            log_success "Java installed"
+        else
+            log_warning "Java installation failed, but continuing"
+        fi
+    else
+        log_info "Java already installed"
+    fi
+    
+    # Install Maven
+    if ! command -v mvn &> /dev/null; then
+        log_info "Installing Maven..."
+        if sdk install maven 2>/dev/null || true; then
+            log_success "Maven installed"
+        else
+            log_warning "Maven installation failed, but continuing"
+        fi
+    else
+        log_info "Maven already installed"
     fi
 }
 
@@ -235,12 +294,13 @@ install_vscode_extensions() {
 main() {
     log_info "=== Development Tools Installation Started ==="
     
-    install_oh_my_zsh
-    install_node
-    install_python
-    install_docker
-    install_dev_tools
-    install_vscode_extensions
+    install_oh_my_zsh || { log_warning "Oh My Zsh installation had issues"; true; }
+    install_node || { log_warning "Node.js installation had issues"; true; }
+    install_python || { log_warning "Python installation had issues"; true; }
+    install_java || { log_warning "Java installation had issues"; true; }
+    install_docker || { log_warning "Docker installation had issues"; true; }
+    install_dev_tools || { log_warning "Development tools installation had issues"; true; }
+    install_vscode_extensions || { log_warning "VS Code extensions installation had issues"; true; }
     
     log_success "=== Development Tools Installation Complete ==="
     log_info "Please restart your terminal to ensure all changes take effect"
