@@ -39,39 +39,38 @@ verify_command() {
     fi
 }
 
+# Safe sourcing function with proper error handling
+safe_source() {
+    local file=$1
+    local description=$2
+    
+    if [[ -f "$file" ]]; then
+        log_info "Sourcing $description"
+        # Set environment variables to make shell configs CI-friendly
+        export CI=true
+        export NONINTERACTIVE=true
+        
+        if source "$file" 2>/dev/null; then
+            log_success "✓ Successfully sourced $description"
+        else
+            log_warning "⚠ Failed to source $description (likely due to missing plugins/themes)"
+            log_info "This is normal during setup - configs will work after installation completes"
+        fi
+    else
+        log_warning "⚠ $description not found at $file"
+    fi
+}
+
 # Main verification function
 main() {
     echo "--------------------------------"
     log_info "🔍 Verifying installations..."
     
-    # Source shell configurations to pick up environment changes
-    # Source shared profile if it exists
-    if [[ -f ~/.shared_profile ]]; then
-        log_info "Sourcing ~/.shared_profile"
-        # shellcheck source=/dev/null
-        source ~/.shared_profile 2>/dev/null || true
-    fi
-
-    if [[ -f ~/.bashrc ]]; then
-        echo "++++++++++++++++++++++++++++++++"
-        log_info "Sourcing ~/.bashrc"
-        # shellcheck source=/dev/null
-        source ~/.bashrc 2>/dev/null || true
-    fi
-
-    if [[ -f ~/.zshrc ]]; then
-        echo "++++++++++++++++++++++++++++++++"
-        log_info "Sourcing ~/.zshrc"
-        # shellcheck source=/dev/null
-        source ~/.zshrc 2>/dev/null || true
-    fi
-
-    if [[ -f ~/.profile ]]; then
-        echo "++++++++++++++++++++++++++++++++"
-        log_info "Sourcing ~/.profile"
-        # shellcheck source=/dev/null
-        source ~/.profile 2>/dev/null || true
-    fi
+    # Source configurations with error handling
+    safe_source ~/.shared_profile "shared profile"
+    safe_source ~/.bashrc "bash configuration" 
+    safe_source ~/.zshrc "zsh configuration"
+    safe_source ~/.profile "profile configuration"
     
     # Source Homebrew environment on Linux
     if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
@@ -167,3 +166,11 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
+
+
+
+
+# test 1: bash profile
+# test 2: zsh profile
+# This shouldn't do any debugging, this should happen in the installation script
+# This script is for verifying installations after setup
