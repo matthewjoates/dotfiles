@@ -50,6 +50,7 @@ safe_source() {
         export CI=true
         export NONINTERACTIVE=true
         
+        # shellcheck source=/dev/null
         if source "$file" 2>/dev/null; then
             log_success "✓ Successfully sourced $description"
         else
