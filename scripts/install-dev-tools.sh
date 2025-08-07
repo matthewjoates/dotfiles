@@ -165,10 +165,16 @@ install_java() {
     # Install SDKMAN!
     if [[ ! -d "$HOME/.sdkman" ]]; then
         log_info "Installing SDKMAN!..."
-        # Use more robust installation with error handling
-        if curl -s "https://get.sdkman.io" | bash &>/dev/null; then
-            # Wait a moment for installation to complete
-            sleep 2
+        
+        # Download and install SDKMAN with better error handling
+        if curl -s "https://get.sdkman.io" | bash; then
+            # Wait for installation to complete
+            sleep 3
+            
+            # Ensure required directories exist
+            mkdir -p "$HOME/.sdkman/ext"
+            mkdir -p "$HOME/.sdkman/tmp"
+            
             log_success "SDKMAN! installed"
         else
             log_error "SDKMAN! installation failed"
@@ -176,14 +182,23 @@ install_java() {
         fi
     else
         log_info "SDKMAN! already installed"
+        
+        # Ensure required directories exist for existing installations
+        mkdir -p "$HOME/.sdkman/ext"
+        mkdir -p "$HOME/.sdkman/tmp"
     fi
     
     # Source SDKMAN for current session with better error handling
     if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        # Export SDKMAN_DIR before sourcing
+        export SDKMAN_DIR="$HOME/.sdkman"
+        
         # shellcheck source=/dev/null
-        source "$HOME/.sdkman/bin/sdkman-init.sh" &>/dev/null || {
+        if source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null; then
+            log_info "SDKMAN initialized successfully"
+        else
             log_warning "SDKMAN initialization had warnings, but continuing"
-        }
+        fi
         
         # Verify sdk command is available
         if ! command -v sdk &> /dev/null; then

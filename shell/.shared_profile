@@ -29,9 +29,21 @@ fi
 # SDKMAN (with proper error handling for both shells)
 export SDKMAN_DIR="$HOME/.sdkman"
 if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
-    source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || {
-        echo "Warning: SDKMAN initialization had issues" >&2
-    }
+    # Source SDKMAN with proper error handling
+    if ! source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null; then
+        echo "Warning: SDKMAN initialization failed, attempting to fix..." >&2
+        
+        # Check if SDKMAN directory structure is correct
+        if [[ ! -d "$SDKMAN_DIR/ext" ]]; then
+            mkdir -p "$SDKMAN_DIR/ext"
+            echo "Created missing SDKMAN ext directory" >&2
+        fi
+        
+        # Try sourcing again
+        source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || {
+            echo "SDKMAN initialization failed permanently - please reinstall SDKMAN" >&2
+        }
+    fi
 fi
 
 # Shared functions
@@ -94,3 +106,4 @@ reload_sdkman() {
         echo "SDKMAN not found at $HOME/.sdkman/bin/sdkman-init.sh"
     fi
 }
+
