@@ -45,16 +45,31 @@ main() {
     log_info "🔍 Verifying installations..."
     
     # Source shell configurations to pick up environment changes
-    if [[ -f ~/.bashrc ]]; then
+    # Source shared profile if it exists
+    if [[ -f ~/.shared_profile ]]; then
+        log_info "Sourcing ~/.shared_profile"
         # shellcheck source=/dev/null
+        source ~/.shared_profile 2>/dev/null || true
+    fi
+
+    if [[ -f ~/.bashrc ]]; then
         echo "++++++++++++++++++++++++++++++++"
         log_info "Sourcing ~/.bashrc"
+        # shellcheck source=/dev/null
         source ~/.bashrc 2>/dev/null || true
     fi
-    if [[ -f ~/.profile ]]; then
+
+    if [[ -f ~/.zshrc ]]; then
+        echo "++++++++++++++++++++++++++++++++"
+        log_info "Sourcing ~/.zshrc"
         # shellcheck source=/dev/null
+        source ~/.zshrc 2>/dev/null || true
+    fi
+
+    if [[ -f ~/.profile ]]; then
         echo "++++++++++++++++++++++++++++++++"
         log_info "Sourcing ~/.profile"
+        # shellcheck source=/dev/null
         source ~/.profile 2>/dev/null || true
     fi
     
