@@ -1,0 +1,96 @@
+#!/bin/bash
+# Shared profile configuration for both bash and zsh
+# This file contains common environment setup for consistent behavior across shells
+
+# Environment Variables (consistent across shells)
+export EDITOR='code'
+export VISUAL='code'
+export PATH="$HOME/.local/bin:$PATH"
+
+# Homebrew (platform-specific paths)
+if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+# Node.js via NVM
+export NVM_DIR="$HOME/.nvm"
+[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+[[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+
+# Python via pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+fi
+
+# SDKMAN (with proper error handling for both shells)
+export SDKMAN_DIR="$HOME/.sdkman"
+if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || {
+        echo "Warning: SDKMAN initialization had issues" >&2
+    }
+fi
+
+# Shared functions
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Git shortcuts (consistent function syntax for both shells)
+function gst() {
+    git status
+}
+
+function gco() {
+    git checkout "$@"
+}
+
+function gpl() {
+    git pull
+}
+
+function gps() {
+    git push
+}
+
+# Quick navigation aliases
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Development aliases
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Helper function for welcome message
+show_welcome() {
+    cat << "EOF"
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣧⣼⣧⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣭⣭⣤⣄⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣷⣤⣤⡄
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣼⣿⣮⣍⣉⣉⣀⣀⠀⠀⠀
+⠀⠀⣠⣶⣶⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀
+⣴⣿⣿⣿⣿⣿⣯⡛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
+⠉⣿⣿⣿⣿⣿⣿⣷⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀
+⠀⣿⣿⣿⣿⣿⣿⡟⠸⠿⠿⠿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀
+⠀⠘⢿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠉⠉⣿⣿⡏⠁⠀⠀⠀⠀⠀
+⠀⠀⢸⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀
+EOF
+    echo "Welcome back, Matty!"
+}
+
+# Helper function to manually reload SDKMAN for debugging
+reload_sdkman() {
+    if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        # shellcheck source=/dev/null
+        source "$HOME/.sdkman/bin/sdkman-init.sh"
+        echo "SDKMAN reloaded"
+    else
+        echo "SDKMAN not found at $HOME/.sdkman/bin/sdkman-init.sh"
+    fi
+}

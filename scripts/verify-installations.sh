@@ -41,15 +41,20 @@ verify_command() {
 
 # Main verification function
 main() {
+    echo "--------------------------------"
     log_info "🔍 Verifying installations..."
     
     # Source shell configurations to pick up environment changes
     if [[ -f ~/.bashrc ]]; then
         # shellcheck source=/dev/null
+        echo "++++++++++++++++++++++++++++++++"
+        log_info "Sourcing ~/.bashrc"
         source ~/.bashrc 2>/dev/null || true
     fi
     if [[ -f ~/.profile ]]; then
-        # shellcheck source=/dev/null  
+        # shellcheck source=/dev/null
+        echo "++++++++++++++++++++++++++++++++"
+        log_info "Sourcing ~/.profile"
         source ~/.profile 2>/dev/null || true
     fi
     
@@ -75,10 +80,12 @@ main() {
         log_info "✓ SDKMAN directory exists"
     else
         log_warning "✗ SDKMAN directory missing"
-    fi    # Basic tools
-    verify_command "git" "Git"
+    fi    
+
     
     # Node.js (need to source NVM first)
+    echo "--------------------------------"
+    log_info "🔧 Verifying Node.js installations..."
     if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
         export NVM_DIR="$HOME/.nvm"
         # shellcheck source=/dev/null
@@ -91,6 +98,8 @@ main() {
     fi
     
     # Python (need to source pyenv first)
+    echo "--------------------------------"
+    log_info "🔧 Verifying Python installations..."
     verify_command "python3" "Python"
     if [[ -d "$HOME/.pyenv" ]]; then
         export PYENV_ROOT="$HOME/.pyenv"
@@ -103,6 +112,8 @@ main() {
     
 
     # Source SDKMAN! if it exists
+    echo "--------------------------------"
+    log_info "🔧 Verifying SDKMAN! installations..."
     if [[ -d "$HOME/.sdkman" && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
         # shellcheck source=/dev/null
         source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -118,6 +129,9 @@ main() {
     fi
     
     # Development tools
+    echo "--------------------------------"
+    log_info "🔧 Verifying development tools..."
+    verify_command "git" "Git"
     verify_command "docker" "Docker"
     verify_command "kubectl" "Kubernetes CLI"
     verify_command "psql" "PostgreSQL CLI"
@@ -129,9 +143,9 @@ main() {
     verify_command "aws" "AWS CLI"
     verify_command "terraform" "Terraform"
     verify_command "gh" "GitHub CLI"
-
     echo "--------------------------------"
     log_success "🎉 Verification completed!"
+    echo "--------------------------------"
 }
 
 # Run main function if script is executed directly

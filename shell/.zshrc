@@ -1,8 +1,12 @@
+#!/bin/zsh
 # Matty's Zsh Configuration
+
+# Load shared profile first (contains common environment setup)
+[[ -f ~/.shared_profile ]] && source ~/.shared_profile
 
 # Oh My Zsh configuration
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Oh My Zsh plugins
 plugins=(
@@ -27,45 +31,45 @@ plugins=(
 # Load aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
 
-# Environment Variables
-export EDITOR='code'
-export VISUAL='code'
+# Environment Variables - Now loaded from shared profile
+# export EDITOR='code'
+# export VISUAL='code'
 
-# Homebrew
-if [[ -f "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+# Homebrew - Now loaded from shared profile
+# if [[ -f "/opt/homebrew/bin/brew" ]]; then
+#     eval "$(/opt/homebrew/bin/brew shellenv)"
+# fi
 
-# Node.js (if using nvm)
-export NVM_DIR="$HOME/.nvm"
-[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
-[[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+# Node.js - Now loaded from shared profile
+# export NVM_DIR="$HOME/.nvm"
+# [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+# [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
 
-# Python (if using pyenv)
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
+# Python - Now loaded from shared profile
+# if command -v pyenv 1>/dev/null 2>&1; then
+#     eval "$(pyenv init -)"
+# fi
 
-# Add local bin to PATH
-export PATH="$HOME/.local/bin:$PATH"
+# PATH - Now loaded from shared profile
+# export PATH="$HOME/.local/bin:$PATH"
 
-# Custom functions
-mkcd() {
-    mkdir -p "$1" && cd "$1"
-}
+# Functions and aliases - Now loaded from shared profile
+# mkcd() {
+#     mkdir -p "$1" && cd "$1"
+# }
 
-# Git shortcuts
-gst() { git status; }
-gco() { git checkout "$@"; }
-gpl() { git pull; }
-gps() { git push; }
+# Git shortcuts - Now loaded from shared profile
+# gst() { git status; }
+# gco() { git checkout "$@"; }
+# gpl() { git pull; }
+# gps() { git push; }
 
-# Quick navigation
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
+# Quick navigation - Now loaded from shared profile
+# alias ..='cd ..'
+# alias ...='cd ../..'
+# alias ....='cd ../../..'
 
-# History settings
+# Zsh-specific settings
 HISTSIZE=10000
 SAVEHIST=10000
 setopt SHARE_HISTORY
@@ -80,19 +84,9 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 # Load custom local configuration if it exists
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-# Custom ASCII art welcome
-cat << "EOF"
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣧⣼⣧⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣭⣭⣤⣄⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣷⣤⣤⡄
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣼⣿⣮⣍⣉⣉⣀⣀⠀⠀⠀
-⠀⠀⣠⣶⣶⣶⣶⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀
-⣴⣿⣿⣿⣿⣿⣯⡛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀
-⠉⣿⣿⣿⣿⣿⣿⣷⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀
-⠀⣿⣿⣿⣿⣿⣿⡟⠸⠿⠿⠿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠀⠀⠀
-⠀⠘⢿⣿⣿⠿⠋⠀⠀⠀⠀⠀⠀⠉⠉⣿⣿⡏⠁⠀⠀⠀⠀⠀
-⠀⠀⢸⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀
-EOF
+# Show welcome message for interactive zsh sessions (only once per session)
+if [[ $- == *i* ]] && [[ -z "$ZSH_WELCOME_SHOWN" ]]; then
+    show_welcome
+    export ZSH_WELCOME_SHOWN=1
+fi
 
-echo "Welcome back, Matty!"

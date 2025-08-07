@@ -50,15 +50,23 @@ install_oh_my_zsh() {
         log_info "Installing Oh My Zsh..."
         sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         
-        # Install useful plugins (only if they don't exist)
-        if [[ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]]; then
-            git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-        fi
-        if [[ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]]; then
-            git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+        # Install powerlevel10k theme
+        if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]]; then
+            log_info "Installing powerlevel10k theme..."
+            git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
         fi
         
-        log_success "Oh My Zsh installed with plugins"
+        # Install useful plugins (only if they don't exist)
+        if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]]; then
+            log_info "Installing zsh-autosuggestions plugin..."
+            git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+        fi
+        if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]]; then
+            log_info "Installing zsh-syntax-highlighting plugin..."
+            git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+        fi
+        
+        log_success "Oh My Zsh installed with plugins and theme"
     else
         log_info "Oh My Zsh already installed"
     fi
@@ -157,9 +165,10 @@ install_java() {
     # Install SDKMAN!
     if [[ ! -d "$HOME/.sdkman" ]]; then
         log_info "Installing SDKMAN!..."
-        if curl -s "https://get.sdkman.io" | bash 2>/dev/null; then
-            # shellcheck source=/dev/null
-            source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || true
+        # Use more robust installation with error handling
+        if curl -s "https://get.sdkman.io" | bash &>/dev/null; then
+            # Wait a moment for installation to complete
+            sleep 2
             log_success "SDKMAN! installed"
         else
             log_error "SDKMAN! installation failed"
@@ -167,14 +176,29 @@ install_java() {
         fi
     else
         log_info "SDKMAN! already installed"
-        # shellcheck source=/dev/null
-        source "$HOME/.sdkman/bin/sdkman-init.sh" 2>/dev/null || true
     fi
     
-    # Install Java
+    # Source SDKMAN for current session with better error handling
+    if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+        # shellcheck source=/dev/null
+        source "$HOME/.sdkman/bin/sdkman-init.sh" &>/dev/null || {
+            log_warning "SDKMAN initialization had warnings, but continuing"
+        }
+        
+        # Verify sdk command is available
+        if ! command -v sdk &> /dev/null; then
+            log_warning "SDK command not available after sourcing SDKMAN"
+            return 0
+        fi
+    else
+        log_warning "SDKMAN init script not found, skipping Java installation"
+        return 0
+    fi
+    
+    # Install Java with better error handling
     if ! command -v java &> /dev/null; then
         log_info "Installing Java..."
-        if sdk install java 21.0.5-tem 2>/dev/null || true; then
+        if sdk install java 21.0.5-tem 2>/dev/null; then
             log_success "Java installed"
         else
             log_warning "Java installation failed, but continuing"
@@ -183,10 +207,10 @@ install_java() {
         log_info "Java already installed"
     fi
     
-    # Install Maven
+    # Install Maven with better error handling
     if ! command -v mvn &> /dev/null; then
         log_info "Installing Maven..."
-        if sdk install maven 2>/dev/null || true; then
+        if sdk install maven 2>/dev/null; then
             log_success "Maven installed"
         else
             log_warning "Maven installation failed, but continuing"
@@ -346,6 +370,37 @@ install_vscode_extensions() {
     fi
 }
 
+# Setup shell configuration (run after all tools are installed)
+setup_shell_config() {
+    log_info "Setting up shell configuration..."
+    
+    # Setup shared profile first (contains common environment setup)
+    if [[ -f "/workspace/shell/.shared_profile" ]]; then
+        ln -sf "/workspace/shell/.shared_profile" "$HOME/.shared_profile"
+        log_success "Shared profile linked"
+    fi
+    
+    # Setup zsh configuration (after Oh My Zsh installation)
+    if [[ -f "/workspace/shell/.zshrc" ]]; then
+        ln -sf "/workspace/shell/.zshrc" "$HOME/.zshrc"
+        log_success "Custom .zshrc linked"
+    fi
+    
+    # Setup bash configuration
+    if [[ -f "/workspace/shell/.bashrc" ]]; then
+        ln -sf "/workspace/shell/.bashrc" "$HOME/.bashrc"
+        log_success "Custom .bashrc linked"
+    fi
+    
+    # Setup aliases
+    if [[ -f "/workspace/shell/.aliases" ]]; then
+        ln -sf "/workspace/shell/.aliases" "$HOME/.aliases"
+        log_success "Aliases linked"
+    fi
+    
+    log_success "Shell configuration setup complete"
+}
+
 # Main function
 main() {
     log_info "=== Development Tools Installation Started ==="
@@ -357,6 +412,9 @@ main() {
     install_docker || { log_warning "Docker installation had issues"; true; }
     install_dev_tools || { log_warning "Development tools installation had issues"; true; }
     install_vscode_extensions || { log_warning "VS Code extensions installation had issues"; true; }
+    
+    # Setup shell configuration after all tools are installed
+    setup_shell_config || { log_warning "Shell configuration had issues"; true; }
     
     log_success "=== Development Tools Installation Complete ==="
     log_info "Please restart your terminal to ensure all changes take effect"

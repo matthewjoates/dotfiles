@@ -74,6 +74,11 @@ create_symlink() {
 setup_shell() {
     log_info "Setting up shell configuration..."
     
+    # Setup shared profile first (contains common environment setup)
+    if [[ -f "$DOTFILES_DIR/shell/.shared_profile" ]]; then
+        create_symlink "$DOTFILES_DIR/shell/.shared_profile" "$HOME/.shared_profile"
+    fi
+    
     # Setup zsh configuration
     if [[ -f "$DOTFILES_DIR/shell/.zshrc" ]]; then
         create_symlink "$DOTFILES_DIR/shell/.zshrc" "$HOME/.zshrc"
