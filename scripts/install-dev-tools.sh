@@ -44,6 +44,37 @@ else
     PLATFORM="unknown"
 fi
 
+# Install zsh first (required for Oh My Zsh)
+install_zsh() {
+    if ! command -v zsh &> /dev/null; then
+        log_info "Installing zsh..."
+        
+        if [[ "$PLATFORM" == "macos" ]]; then
+            # zsh comes pre-installed on modern macOS, but ensure it's available
+            if ! command -v zsh &> /dev/null; then
+                brew install zsh
+            fi
+        elif [[ "$PLATFORM" == "linux" ]]; then
+            # Install zsh on Linux systems
+            if command -v apt-get &> /dev/null; then
+                sudo apt-get update
+                sudo apt-get install -y zsh
+            elif command -v yum &> /dev/null; then
+                sudo yum install -y zsh
+            elif command -v brew &> /dev/null; then
+                brew install zsh
+            else
+                log_error "No package manager found to install zsh"
+                return 1
+            fi
+        fi
+        
+        log_success "zsh installed"
+    else
+        log_info "zsh already installed"
+    fi
+}
+
 # Install Oh My Zsh
 install_oh_my_zsh() {
     if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
@@ -251,6 +282,7 @@ install_homebrew_linux() {
     fi
 }
 
+
 # Install common development tools
 install_dev_tools() {
     log_info "Installing development tools..."
@@ -410,12 +442,13 @@ setup_shell_config() {
 main() {
     log_info "=== Development Tools Installation Started ==="
     
+    install_dev_tools || { log_warning "Development tools installation had issues"; true; }
+    install_zsh || { log_warning "Zsh installation had issues"; true; }
     install_oh_my_zsh || { log_warning "Oh My Zsh installation had issues"; true; }
     install_node || { log_warning "Node.js installation had issues"; true; }
     install_python || { log_warning "Python installation had issues"; true; }
     install_java || { log_warning "Java installation had issues"; true; }
     install_docker || { log_warning "Docker installation had issues"; true; }
-    install_dev_tools || { log_warning "Development tools installation had issues"; true; }
     install_vscode_extensions || { log_warning "VS Code extensions installation had issues"; true; }
     
     # Setup shell configuration after all tools are installed
