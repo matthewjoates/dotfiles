@@ -359,7 +359,7 @@ install_dev_tools() {
             visual-studio-code \
             ghostty \
             postman \
-            docker \
+            docker
     fi
     
     log_success "Development tools installed"
