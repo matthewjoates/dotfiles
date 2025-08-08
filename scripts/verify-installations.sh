@@ -169,14 +169,20 @@ main() {
     
     # Check for basic configuration files
     log_info "Checking for configuration files..."
+    # schellcheck source=/dev/null
     [[ -f "$HOME/.shared_profile" ]] && log_success "✓ Shared profile exists" || log_warning "⚠ Shared profile missing"
+    # schellcheck source=/dev/null
     [[ -f "$HOME/.bashrc" ]] && log_success "✓ Bash configuration exists" || log_warning "⚠ Bash configuration missing"
+    # schellcheck source=/dev/null
     [[ -f "$HOME/.zshrc" ]] && log_success "✓ Zsh configuration exists" || log_warning "⚠ Zsh configuration missing"
     
     # Check for installation directories
     log_info "Checking for installation directories..."
+    # schellcheck source=/dev/null
     [[ -d "$HOME/.nvm" ]] && log_success "✓ NVM directory exists" || log_warning "⚠ NVM directory missing"
+    # schellcheck source=/dev/null
     [[ -d "$HOME/.pyenv" ]] && log_success "✓ pyenv directory exists" || log_warning "⚠ pyenv directory missing"
+    # schellcheck source=/dev/null
     [[ -d "$HOME/.sdkman" ]] && log_success "✓ SDKMAN directory exists" || log_warning "⚠ SDKMAN directory missing"
     
     # Test both shell environments separately

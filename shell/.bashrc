@@ -31,4 +31,4 @@ if [[ $- == *i* ]] && [[ -z "$BASH_WELCOME_SHOWN" ]]; then
     export BASH_WELCOME_SHOWN=1
 fi
 
-# Load shared functions
+###### FINSIHED ######
