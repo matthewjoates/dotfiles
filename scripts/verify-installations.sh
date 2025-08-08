@@ -206,6 +206,7 @@ main() {
     else
         log_warning "⚠ SDKMAN directory missing"
     fi
+    
     # Test both shell environments separately
     test_bash_environment
     test_zsh_environment
