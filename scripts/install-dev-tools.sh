@@ -353,7 +353,6 @@ install_dev_tools() {
     # Platform-specific installations
     if [[ "$PLATFORM" == "macos" ]]; then
         # macOS-specific tools
-        brew install --cask google-cloud-sdk
         
         # Cask applications (macOS only)
         brew install --cask \
@@ -361,16 +360,6 @@ install_dev_tools() {
             ghostty \
             postman \
             docker \
-            
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        # Google Cloud SDK (use official installation method for Linux)
-        if ! command -v gcloud &> /dev/null; then
-            log_info "Installing Google Cloud SDK on Linux..."
-            curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
-            # shellcheck source=/dev/null
-            source "$HOME/google-cloud-sdk/path.bash.inc" 2>/dev/null || true
-            log_success "Google Cloud SDK installed"
-        fi
     fi
     
     log_success "Development tools installed"

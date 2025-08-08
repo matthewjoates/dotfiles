@@ -1,6 +1,21 @@
 #!/bin/zsh
 # Matty's Zsh Configuration
 
+# CI-friendly settings (disable problematic features in automated environments)
+if [[ -n "$CI" || -n "$NONINTERACTIVE" ]]; then
+    export ZSH_DISABLE_COMPFIX=true
+    export DISABLE_AUTO_UPDATE=true
+    export DISABLE_UPDATE_PROMPT=true
+    export DISABLE_CORRECTION=true
+fi
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Load shared profile first (contains common environment setup)
 [[ -f ~/.shared_profile ]] && source ~/.shared_profile
 
@@ -28,46 +43,12 @@ plugins=(
 # Load Oh My Zsh if it exists
 [[ -f $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
 
+# Load Powerlevel10k theme if installed
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
 # Load aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
 
-# Environment Variables - Now loaded from shared profile
-# export EDITOR='code'
-# export VISUAL='code'
-
-# Homebrew - Now loaded from shared profile
-# if [[ -f "/opt/homebrew/bin/brew" ]]; then
-#     eval "$(/opt/homebrew/bin/brew shellenv)"
-# fi
-
-# Node.js - Now loaded from shared profile
-# export NVM_DIR="$HOME/.nvm"
-# [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
-# [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
-
-# Python - Now loaded from shared profile
-# if command -v pyenv 1>/dev/null 2>&1; then
-#     eval "$(pyenv init -)"
-# fi
-
-# PATH - Now loaded from shared profile
-# export PATH="$HOME/.local/bin:$PATH"
-
-# Functions and aliases - Now loaded from shared profile
-# mkcd() {
-#     mkdir -p "$1" && cd "$1"
-# }
-
-# Git shortcuts - Now loaded from shared profile
-# gst() { git status; }
-# gco() { git checkout "$@"; }
-# gpl() { git pull; }
-# gps() { git push; }
-
-# Quick navigation - Now loaded from shared profile
-# alias ..='cd ..'
-# alias ...='cd ../..'
-# alias ....='cd ../../..'
 
 # Zsh-specific settings
 HISTSIZE=10000

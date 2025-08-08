@@ -84,6 +84,11 @@ setup_shell() {
         create_symlink "$DOTFILES_DIR/shell/.zshrc" "$HOME/.zshrc"
     fi
     
+    # Setup zsh p10k configuration
+    if [[ -f "$DOTFILES_DIR/shell/.p10k.zsh" ]]; then
+        create_symlink "$DOTFILES_DIR/shell/.p10k.zsh" "$HOME/.p10k.zsh"
+    fi
+
     # Setup bash configuration
     if [[ -f "$DOTFILES_DIR/shell/.bashrc" ]]; then
         create_symlink "$DOTFILES_DIR/shell/.bashrc" "$HOME/.bashrc"
