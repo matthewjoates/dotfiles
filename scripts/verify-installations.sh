@@ -79,15 +79,36 @@ test_bash_environment() {
     
     # Run bash with our configuration and test commands
     bash -c "
+        # Export color variables for subshell
+        RED='\033[0;31m'
+        GREEN='\033[0;32m'
+        YELLOW='\033[1;33m'
+        BLUE='\033[0;34m'
+        NC='\033[0m'
+        
+        # Define logging functions in subshell
+        log_info() {
+            echo -e \"\${BLUE}[INFO]\${NC} \$1\"
+        }
+        
+        log_success() {
+            echo -e \"\${GREEN}[SUCCESS]\${NC} \$1\"
+        }
+        
+        log_warning() {
+            echo -e \"\${YELLOW}[WARNING]\${NC} \$1\"
+        }
+        
+        log_error() {
+            echo -e \"\${RED}[ERROR]\${NC} \$1\"
+        }
+        
         # Source our configurations
         [[ -f ~/.shared_profile ]] && source ~/.shared_profile
         [[ -f ~/.bashrc ]] && source ~/.bashrc
         
-        # Export a function so we can call it from this subshell
+        # Define verification functions in subshell
         $(declare -f verify_command)
-        $(declare -f log_success)
-        $(declare -f log_info)
-        $(declare -f log_error)
         $(declare -f verify_development_tools)
         
         # Run verification
@@ -103,15 +124,36 @@ test_zsh_environment() {
     
     # Run zsh with our configuration and test commands
     zsh -c "
+        # Export color variables for subshell
+        RED='\033[0;31m'
+        GREEN='\033[0;32m'
+        YELLOW='\033[1;33m'
+        BLUE='\033[0;34m'
+        NC='\033[0m'
+        
+        # Define logging functions in subshell
+        log_info() {
+            echo -e \"\${BLUE}[INFO]\${NC} \$1\"
+        }
+        
+        log_success() {
+            echo -e \"\${GREEN}[SUCCESS]\${NC} \$1\"
+        }
+        
+        log_warning() {
+            echo -e \"\${YELLOW}[WARNING]\${NC} \$1\"
+        }
+        
+        log_error() {
+            echo -e \"\${RED}[ERROR]\${NC} \$1\"
+        }
+        
         # Source our configurations
         [[ -f ~/.shared_profile ]] && source ~/.shared_profile
         [[ -f ~/.zshrc ]] && source ~/.zshrc
         
-        # Export functions so we can call them from this subshell
+        # Define verification functions in subshell
         $(declare -f verify_command)
-        $(declare -f log_success) 
-        $(declare -f log_error)
-        $(declare -f log_info)
         $(declare -f verify_development_tools)
         
         # Run verification
