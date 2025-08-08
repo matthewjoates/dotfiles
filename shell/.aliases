@@ -97,3 +97,5 @@ alias hosts='sudo code /etc/hosts'
 # Fun stuff
 alias matrix='cmatrix'
 alias starwars='telnet towel.blinkenlights.nl'
+
+###### FINISH ######

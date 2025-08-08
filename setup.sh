@@ -98,7 +98,12 @@ setup_shell() {
     if [[ -f "$DOTFILES_DIR/shell/.aliases" ]]; then
         create_symlink "$DOTFILES_DIR/shell/.aliases" "$HOME/.aliases"
     fi
-    
+
+    # Setup vim configuration
+    if [[ -f "$DOTFILES_DIR/shell/.vimrc" ]]; then
+        create_symlink "$DOTFILES_DIR/shell/.vimrc" "$HOME/.vimrc"
+    fi
+
     log_success "Shell configuration files linked"
     log_info "Note: Run 'chsh -s \$(which zsh)' manually after zsh is installed to change default shell"
 }

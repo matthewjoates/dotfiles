@@ -230,3 +230,5 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 # Restore options
 (( ${#p10k_config_opts} )) && setopt ${p10k_config_opts[@]}
 'builtin' 'unset' 'p10k_config_opts'
+
+###### FINISH ######

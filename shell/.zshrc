@@ -71,3 +71,4 @@ if [[ $- == *i* ]] && [[ -z "$ZSH_WELCOME_SHOWN" ]]; then
     export ZSH_WELCOME_SHOWN=1
 fi
 
+###### FINISH ######
