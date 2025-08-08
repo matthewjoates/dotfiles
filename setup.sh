@@ -175,6 +175,7 @@ main() {
     setup_git
     setup_dev_tools
     
+    print_corgi
     log_success "=== Dotfiles Setup Complete ==="
     log_info "Please restart your terminal or run 'source ~/.zshrc' to apply changes"
 }
