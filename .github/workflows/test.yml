@@ -61,9 +61,9 @@ jobs:
         
     - name: Run installation script
       run: |
-        echo "🚀 Running dotfiles setup on Linux"
-        chmod +x setup.sh
-        ./setup.sh
+        echo "🚀 Running dotfiles installation on Linux"
+        chmod +x scripts/install-dev-tools.sh
+        ./scripts/install-dev-tools.sh
         
     - name: Verify installations
       run: |
