@@ -169,22 +169,43 @@ main() {
     
     # Check for basic configuration files
     log_info "Checking for configuration files..."
-    # schellcheck source=/dev/null
-    [[ -f "$HOME/.shared_profile" ]] && log_success "✓ Shared profile exists" || log_warning "⚠ Shared profile missing"
-    # schellcheck source=/dev/null
-    [[ -f "$HOME/.bashrc" ]] && log_success "✓ Bash configuration exists" || log_warning "⚠ Bash configuration missing"
-    # schellcheck source=/dev/null
-    [[ -f "$HOME/.zshrc" ]] && log_success "✓ Zsh configuration exists" || log_warning "⚠ Zsh configuration missing"
-    
+    if [[ -f "$HOME/.shared_profile" ]]; then
+        log_success "✓ Shared profile exists"
+    else
+        log_warning "⚠ Shared profile missing"
+    fi
+
+    if [[ -f "$HOME/.bashrc" ]]; then
+        log_success "✓ Bash configuration exists"
+    else
+        log_warning "⚠ Bash configuration missing"
+    fi
+
+    if [[ -f "$HOME/.zshrc" ]]; then
+        log_success "✓ Zsh configuration exists"
+    else
+        log_warning "⚠ Zsh configuration missing"
+    fi
+
     # Check for installation directories
     log_info "Checking for installation directories..."
-    # schellcheck source=/dev/null
-    [[ -d "$HOME/.nvm" ]] && log_success "✓ NVM directory exists" || log_warning "⚠ NVM directory missing"
-    # schellcheck source=/dev/null
-    [[ -d "$HOME/.pyenv" ]] && log_success "✓ pyenv directory exists" || log_warning "⚠ pyenv directory missing"
-    # schellcheck source=/dev/null
-    [[ -d "$HOME/.sdkman" ]] && log_success "✓ SDKMAN directory exists" || log_warning "⚠ SDKMAN directory missing"
-    
+    if [[ -d "$HOME/.nvm" ]]; then
+        log_success "✓ NVM directory exists"
+    else
+        log_warning "⚠ NVM directory missing"
+    fi
+
+    if [[ -d "$HOME/.pyenv" ]]; then
+        log_success "✓ pyenv directory exists"
+    else
+        log_warning "⚠ pyenv directory missing"
+    fi
+
+    if [[ -d "$HOME/.sdkman" ]]; then
+        log_success "✓ SDKMAN directory exists"
+    else
+        log_warning "⚠ SDKMAN directory missing"
+    fi
     # Test both shell environments separately
     test_bash_environment
     test_zsh_environment
