@@ -96,17 +96,6 @@ EOF
     echo "Welcome back, Matty!"
 }
 
-# Helper function to manually reload SDKMAN for debugging
-reload_sdkman() {
-    if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
-        # shellcheck source=/dev/null
-        source "$HOME/.sdkman/bin/sdkman-init.sh"
-        echo "SDKMAN reloaded"
-    else
-        echo "SDKMAN not found at $HOME/.sdkman/bin/sdkman-init.sh"
-    fi
-}
-
 ### New Lines
 
 
