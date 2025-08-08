@@ -23,8 +23,8 @@ jobs:
     - name: Run installation script
       run: |
         echo "🚀 Running dotfiles installation on macOS"
-        chmod +x scripts/install-dev-tools.sh
-        ./scripts/install-dev-tools.sh
+        chmod +x setup.sh
+        echo "y" | ./setup.sh
         
     - name: Verify installations
       run: |

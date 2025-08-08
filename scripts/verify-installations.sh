@@ -124,6 +124,12 @@ test_zsh_environment() {
     
     # Run zsh with our configuration and test commands
     zsh -c "
+        export CI=true
+        export NONINTERACTIVE=true
+        export ZSH_DISABLE_COMPFIX=true
+        export DISABLE_AUTO_UPDATE=true
+        export DISABLE_UPDATE_PROMPT=true
+
         # Export color variables for subshell
         RED='\033[0;31m'
         GREEN='\033[0;32m'
@@ -206,7 +212,7 @@ main() {
     else
         log_warning "⚠ SDKMAN directory missing"
     fi
-    
+
     # Test both shell environments separately
     test_bash_environment
     test_zsh_environment
