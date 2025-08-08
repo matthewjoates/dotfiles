@@ -105,12 +105,6 @@ install_python() {
             curl https://pyenv.run | bash
         fi
         
-        # Add pyenv to shell
-        {
-            echo "export PYENV_ROOT=\"\$HOME/.pyenv\""
-            echo "command -v pyenv >/dev/null || export PATH=\"\$PYENV_ROOT/bin:\$PATH\""
-            echo "eval \"\$(pyenv init -)\""
-        } >> ~/.shared_profile
         
         # Source pyenv
         export PYENV_ROOT="$HOME/.pyenv"
@@ -248,10 +242,6 @@ install_homebrew_linux() {
         # Add Homebrew to PATH for current session
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         
-        # Add to shell profiles
-        {
-            echo "eval \"\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\""
-        } >> ~/.shared_profile
         
         log_success "Homebrew installed on Linux"
     else
