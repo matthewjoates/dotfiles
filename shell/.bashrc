@@ -30,3 +30,5 @@ if [[ $- == *i* ]] && [[ -z "$BASH_WELCOME_SHOWN" ]]; then
     show_welcome
     export BASH_WELCOME_SHOWN=1
 fi
+
+
