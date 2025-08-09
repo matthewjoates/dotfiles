@@ -53,6 +53,7 @@ Welcome to my personal dotfiles repository! This contains my shell configuration
 ### Scripts
 - **Main Setup Script**: One-command setup for new machines
 - **Development Tools Installer**: Automated installation of common dev tools
+- **.bashrc Backup/Restore**: During tool installation, `.bashrc` is automatically backed up and restored to prevent unwanted changes from SDKMAN/NVM.
 
 ## 🚀 Quick Start
 
@@ -120,7 +121,7 @@ dotfiles/
 │   └── vscode-settings.json    # VS Code settings
 ├── docker-compose.test.yml     # Docker testing configuration
 ├── Dockerfile                  # Testing container definition
-└── run-docker.sh              # Automated testing script
+└── docker.sh                   # Automated testing script
 ```
 
 ## 🛠 What Gets Installed
@@ -153,6 +154,11 @@ dotfiles/
 - **AWS CLI** - Amazon Web Services tools
 - **GitHub CLI** - Git repository management
 
+### Vim/Neovim Plugins
+- **General Productivity**: vim-sensible, vim-rooter, vim-fugitive, vim-gitgutter, vim-airline, vim-airline-themes, vim-surround, vim-commentary, vim-repeat, editorconfig-vim, far.vim, vim-markdown, vim-pencil
+- **File Navigation**: nerdtree, fzf.vim
+- **Java Development**: coc.nvim (with coc-java), vim-polyglot, tagbar, vim-dispatch, ale, ultisnips, vim-snippets, vimspector
+
 ### VS Code Extensions
 - **Java Extension Pack** - Complete Java development support
 - **Python Support** - Python language features and debugging
@@ -163,7 +169,17 @@ dotfiles/
 - **Code Formatting** - Prettier, ESLint integration
 - **Terraform & AWS** - Infrastructure and cloud development
 
+### Notable Vim Motions/Editing Plugins
+- **vim-easymotion**: Fast cursor movement
+- **vim-sneak**: Minimal 2-character jump
+- **targets.vim**: Extra text objects
+- **vim-unimpaired**: Handy bracket mappings
+- **vim-matchup**: Enhanced % matching
+
 ## 🔧 Customization
+
+### .bashrc Protection
+The install-dev-tools.sh script now automatically backs up your `.bashrc` before installing tools that may modify it (like SDKMAN or NVM), and restores it at the end. This prevents unwanted changes to your shell configuration.
 
 ### Personal Information
 Before running the setup, update these files with your personal information:
@@ -247,7 +263,7 @@ Test your dotfiles setup locally using Docker:
 
 ```bash
 # Run automated test
-./run-docker.sh
+./docker.sh
 
 # Or manually:
 # Build and run test container

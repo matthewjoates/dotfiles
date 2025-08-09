@@ -60,7 +60,7 @@ COPY --chown=testuser:testuser . /workspace
 WORKDIR /workspace
 
 # Make scripts executable
-RUN chmod +x setup.sh scripts/*.sh run-docker.sh
+RUN chmod +x setup.sh scripts/*.sh docker.sh
 
 # Default command
 CMD ["/bin/bash"]
