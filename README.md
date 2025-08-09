@@ -61,7 +61,7 @@ Welcome to my personal dotfiles repository! This contains my shell configuration
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/matthewjoates/dotfiles.git ~/dotfiles
+   git clone https://github.com/matthewjoates/dev-environment-config.git ~/dotfiles
    cd ~/dotfiles
    ```
 
