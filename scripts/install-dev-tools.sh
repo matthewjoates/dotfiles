@@ -6,12 +6,29 @@
 set -e  # Exit on error
 # Note: Removed 'set -e' to allow script to continue even if individual tools fail
 
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+# Backup and restore .bashrc to protect from SDKMAN/NVM edits
+backup_bashrc() {
+    if [[ -f "$HOME/.bashrc" ]]; then
+        cp "$HOME/.bashrc" "$HOME/.bashrc.pre-devtools-backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$HOME/.bashrc" /tmp/.bashrc.devtools-backup
+        log_info ".bashrc backed up"
+    fi
+}
+
+restore_bashrc() {
+    if [[ -f /tmp/.bashrc.devtools-backup ]]; then
+        cp /tmp/.bashrc.devtools-backup "$HOME/.bashrc"
+        log_success ".bashrc restored from backup"
+    fi
+}
 
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -100,6 +117,34 @@ install_oh_my_zsh() {
         log_success "Oh My Zsh installed with plugins and theme"
     else
         log_info "Oh My Zsh already installed"
+    fi
+}
+
+install_vim_plug(){
+    # Vim support
+    if [[ ! -f "$HOME/.vim/autoload/plug.vim" ]]; then
+        log_info "Installing Vim Plug..."
+        mkdir -p "$HOME/.vim/autoload"
+        curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        log_success "Vim Plug installed"
+        vim +Plug +PlugInstall +qall
+        log_success "Vim plugins installed"
+    else
+        log_info "Vim Plug already installed"
+    fi
+
+    # Neovim support
+    if [[ ! -f "$HOME/.local/share/nvim/site/autoload/plug.vim" ]]; then
+        log_info "Installing Neovim Plug..."
+        mkdir -p "$HOME/.local/share/nvim/site/autoload"
+        curl -fLo "$HOME/.local/share/nvim/site/autoload/plug.vim" --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        log_success "Neovim Plug installed"
+        nvim +Plug +PlugInstall +qall
+        log_success "Neovim plugins installed"
+    else
+        log_info "Neovim Plug already installed"
     fi
 }
 
@@ -428,21 +473,27 @@ setup_shell_config() {
 }
 
 # Main function
+
 main() {
     log_info "=== Development Tools Installation Started ==="
     
+    # Backup .bashrc to protect from SDKMAN/NVM edits
+    backup_bashrc
+
     install_dev_tools || { log_warning "Development tools installation had issues"; true; }
     install_zsh || { log_warning "Zsh installation had issues"; true; }
     install_oh_my_zsh || { log_warning "Oh My Zsh installation had issues"; true; }
+    install_vim_plug || { log_warning "Vim Plug installation had issues"; true; }
     install_node || { log_warning "Node.js installation had issues"; true; }
     install_python || { log_warning "Python installation had issues"; true; }
     install_java || { log_warning "Java installation had issues"; true; }
     install_docker || { log_warning "Docker installation had issues"; true; }
     install_vscode_extensions || { log_warning "VS Code extensions installation had issues"; true; }
-    
+
     # Setup shell configuration after all tools are installed
     setup_shell_config || { log_warning "Shell configuration had issues"; true; }
-    
+
+    restore_bashrc
     log_success "=== Development Tools Installation Complete ==="
     log_info "Please restart your terminal to ensure all changes take effect"
 }

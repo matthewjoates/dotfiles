@@ -104,6 +104,11 @@ setup_shell() {
         create_symlink "$DOTFILES_DIR/shell/.vimrc" "$HOME/.vimrc"
     fi
 
+    # Setup neovim configuration
+    if [[ -f "$DOTFILES_DIR/shell//init.vim" ]]; then
+        create_symlink "$DOTFILES_DIR/shell/init.vim" "$HOME/.config/nvim/init.vim"
+    fi
+
     log_success "Shell configuration files linked"
     log_info "Note: Run 'chsh -s \$(which zsh)' manually after zsh is installed to change default shell"
 }

@@ -1,5 +1,5 @@
 
-" Matty's vim plugins
+" Matty's neovim plugins
 call plug#begin()
 
 " General productivity plugins
