@@ -376,6 +376,15 @@ install_dev_tools() {
         log_warning "Some editors/databases failed to install"
         return 1
     fi
+
+    # Brew tap mongodb tools
+    log_info "Installing editors and database tools..."
+    if brew tap mongodb/brew && brew install mongodb-community@8.0; then
+        log_success "MongoDB tools installed"
+    else
+        log_warning "mongodb failed to install"
+        return 1
+    fi
     
     # Terminal and productivity tools
     log_info "Installing terminal and productivity tools..."
