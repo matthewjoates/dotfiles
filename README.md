@@ -1,6 +1,6 @@
 # 🚀 Matty's Dotfiles
 
-[![Test Dotfiles Setup](https://github.com/matthewjoates/dev-environment-config/actions/workflows/test.yml/badge.svg)](https://github.com/matthewjoates/dev-environment-config/actions/workflows/test.yml)
+[![Test Dotfiles Setup](https://github.com/matthewjoates/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/matthewjoates/dotfiles/actions/workflows/test.yml)
 
 ```
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡠⠤⠤⠤⠤⠤⠤⠤⠤⠤⢄⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -61,7 +61,7 @@ Welcome to my personal dotfiles repository! This contains my shell configuration
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/matthewjoates/dev-environment-config.git ~/dotfiles
+   git clone https://github.com/matthewjoates/dotfiles.git ~/dotfiles
    cd ~/dotfiles
    ```
 
