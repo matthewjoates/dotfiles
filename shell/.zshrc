@@ -9,11 +9,15 @@ if [[ -n "$CI" || -n "$NONINTERACTIVE" ]]; then
     export DISABLE_CORRECTION=true
 fi
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# Theme selection: Set USE_POWERLEVEL10K=true to use Powerlevel10k, or leave unset/false for robbyrussell
+# To switch: export USE_POWERLEVEL10K=true (or add to ~/.zshrc.local)
+USE_POWERLEVEL10K="${USE_POWERLEVEL10K:-false}"
+
+# Enable Powerlevel10k instant prompt (only if using p10k)
+if [[ "$USE_POWERLEVEL10K" == "true" ]]; then
+  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+  fi
 fi
 
 # Load shared profile first (contains common environment setup)
@@ -21,7 +25,13 @@ fi
 
 # Oh My Zsh configuration
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# Set theme based on preference
+if [[ "$USE_POWERLEVEL10K" == "true" ]]; then
+  ZSH_THEME="powerlevel10k/powerlevel10k"
+else
+  ZSH_THEME="robbyrussell"
+fi
 
 # Oh My Zsh plugins
 plugins=(
@@ -43,8 +53,10 @@ plugins=(
 # Load Oh My Zsh if it exists
 [[ -f $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
 
-# Load Powerlevel10k theme if installed
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+# Load Powerlevel10k config (only if using p10k)
+if [[ "$USE_POWERLEVEL10K" == "true" ]]; then
+  [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+fi
 
 # Load aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
